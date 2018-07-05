@@ -27,7 +27,15 @@ app.use(bodyParser.urlencoded({
 // Root router used for homepage
 app.use('/', express.static(path.join(__dirname, config.dist)))
 
-app.post('/upload', upload.single('fullList'), (req, res, next) => {
+app.post('/upload/fulllist', upload.single('fullList'), (req, res, next) => {
+  console.log(req.file)
+  res.send({
+    result: 0,
+    filename: req.file.filename
+  })
+})
+
+app.post('/upload/targetlist', upload.single('targetList'), (req, res, next) => {
   console.log(req.file)
   res.send({
     result: 0,
