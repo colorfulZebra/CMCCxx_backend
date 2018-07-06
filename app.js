@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
     cb(null, config.upload)
   },
   filename: function(req, file, cb) {
-    cb(null, `${file.fieldname}_${moment().format('YYYY_MM_DD_HH_mm_ss')}`)
+    cb(null, `${file.fieldname}_${moment().format('YYYY_MM_DD')}`)
   }
 })
 const upload = multer({ storage })
@@ -28,15 +28,27 @@ app.use(bodyParser.urlencoded({
 app.use('/', express.static(path.join(__dirname, config.dist)))
 
 app.post('/upload/fulllist', upload.single('fullList'), (req, res, next) => {
-  console.log(req.file)
   res.send({
     result: 0,
     filename: req.file.filename
   })
 })
 
-app.post('/upload/targetlist', upload.single('targetList'), (req, res, next) => {
-  console.log(req.file)
+app.post('/upload/marketlist', upload.single('marketList'), (req, res, next) => {
+  res.send({
+    result: 0,
+    filename: req.file.filename
+  })
+})
+
+app.post('/upload/targetlist/xian', upload.single('targetListxa'), (req, res, next) => {
+  res.send({
+    result: 0,
+    filename: req.file.filename
+  })
+})
+
+app.post('/upload/targetlist/xianyang', upload.single('targetListxy'), (req, res, next) => {
   res.send({
     result: 0,
     filename: req.file.filename
