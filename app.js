@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 const multer = require('multer')
 const moment = require('moment')
 const config = require('./config')
+const getlist = require('./getlist')
 
 const app = express()
 
@@ -29,29 +30,62 @@ app.use('/', express.static(path.join(__dirname, config.dist)))
 
 app.post('/upload/fulllist', upload.single('fullList'), (req, res, next) => {
   res.send({
-    result: 0,
     filename: req.file.filename
   })
 })
 
 app.post('/upload/marketlist', upload.single('marketList'), (req, res, next) => {
   res.send({
-    result: 0,
     filename: req.file.filename
   })
 })
 
 app.post('/upload/targetlist/xian', upload.single('targetListxa'), (req, res, next) => {
   res.send({
-    result: 0,
     filename: req.file.filename
   })
 })
 
 app.post('/upload/targetlist/xianyang', upload.single('targetListxy'), (req, res, next) => {
   res.send({
-    result: 0,
     filename: req.file.filename
+  })
+})
+
+app.post('/result/list', (req, res) => {
+  req.setTimeout(120*1000)
+  let target = req.body.targetfile
+  let base = req.body.basefile
+  let market = req.body.marketfile
+  if (target === undefined || base === undefined || market === undefined) {
+    res.send({
+      return: {
+        code: 10,
+        message: 'targetfile & basefile & marketfile path should not be undefined'
+      }
+    })
+  }
+  let result = {}
+  try {
+    result = getlist(target, base, market)
+  } catch (err) {
+    res.send({
+      return: {
+        code: 20,
+        message: err
+      }
+    })
+  }
+  res.send({
+    return: {
+      code: 0,
+      message: 'OK'
+    },
+    data: {
+      total: result.total,
+      compliance: result.compliance,
+      non_compliance: result.non_compliance 
+    }
   })
 })
 
