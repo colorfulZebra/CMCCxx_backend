@@ -47,7 +47,7 @@ app.post('/upload/targetlist', upload.single('targetList'), (req, res, next) => 
   })
 })
 
-app.post('/check', (req, res) => {
+app.post('/fileinfo', (req, res) => {
   let filepath = `./${config.upload}${req.body.file}`
   if (fs.existsSync(filepath)) {
     let fcontent = fs.readFileSync(filepath)

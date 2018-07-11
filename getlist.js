@@ -7,8 +7,8 @@ module.exports = function (targetfile, basefile, marketfile) {
     target: targetfile,
     base: basefile,
     market: marketfile,
-    result: 'data/result.txt',
-    resulterr: 'data/result.err.txt',
+    result: './data/result.txt',
+    resulterr: './data/result.err.txt',
     product_id: './data/product_id.json',
     discnt_code: './data/discnt_code.json',
     package_id: './data/package_id.json'
@@ -60,7 +60,9 @@ module.exports = function (targetfile, basefile, marketfile) {
   let base_data = fs.readFileSync(path.base)
   // Set serial number as key and match for the 1st time
   let base_dict = {}
-  for (let item of base_data.toString().trim().split('\n')) {
+  let base_lst = base_data.toString().trim().split('\n')
+  let base_title = base_lst[0].split('|').slice(0).join('|')
+  for (let item of base_lst) {
     base_dict[item.split('|')[1]] = item
   }
   for (let idx = 0; idx < target_lst.length; idx++) {
@@ -72,7 +74,7 @@ module.exports = function (targetfile, basefile, marketfile) {
   }
   // Set uid as key and match for the 2nd time
   base_dict = {}
-  for (let item of base_data.toString().trim().split('\n')) {
+  for (let item of base_lst) {
     base_dict[item.split('|')[0]] = item
   }
   for (let idx = 0; idx < target_lst.length; idx++) {
@@ -84,6 +86,7 @@ module.exports = function (targetfile, basefile, marketfile) {
   }
   // Clear memory
   base_data = ''
+  base_lst = []
   base_dict = {}
 
   // save temp data
@@ -97,6 +100,7 @@ module.exports = function (targetfile, basefile, marketfile) {
   target_lst = []
   let market_data = fs.readFileSync(path.market)
   let market_rawlst = market_data.toString().trim().split('\n')
+  let market_title = market_rawlst[0].split('|').slice(1).join('|')
   market_data = ''
   let market_lst = []
   for (let item of market_rawlst) {
@@ -232,8 +236,11 @@ module.exports = function (targetfile, basefile, marketfile) {
     target_lst[idx] = itemlst.join('|')
   }
 
+  let title = `givenID|givenTAG|${base_title}|${market_title}|resultTAG`
   let target_success = target_lst.filter(item => item.split('|')[item.split('|').length-1].length===0)
+  target_success.unshift(title)
   let target_error = target_lst.filter(item => item.split('|')[item.split('|').length-1].length>0)
+  target_error.unshift(title)
   fs.writeFileSync(path.result, target_success.join('\n'), 'utf8')
   fs.writeFileSync(path.resulterr, target_error.join('\n'), 'utf8')
   return {
